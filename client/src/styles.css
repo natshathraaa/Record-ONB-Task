@@ -291,9 +291,20 @@
   .screen-2 .form-content { width: min(100%, 340px); padding-inline: 16px; }
   .form-header { padding-inline: 12px; }
   .record-mark { width: 64px; }
+  .dashboard-section-page { padding-block: 24px; }
+  .dashboard-section-grid { grid-template-columns: 1fr; }
 }
 
 .dashboard-menu-backdrop { display: none; }
+.dashboard-sidebar nav a { cursor: pointer; }
+.dashboard-section-page { width: min(100%, 980px); margin: 0 auto; padding: clamp(24px, 5vw, 72px) 0; }
+.dashboard-section-kicker { margin: 0 0 8px; color: #f0644f; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.dashboard-section-page h1 { margin: 0 0 10px; color: #202b3d; font-size: clamp(28px, 4vw, 44px); }
+.dashboard-section-description { max-width: 620px; margin: 0 0 28px; color: #697386; font-size: 15px; line-height: 1.6; }
+.dashboard-section-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.dashboard-section-grid article { min-width: 0; padding: clamp(18px, 3vw, 28px); border: 1px solid #e7e9ed; border-radius: 12px; background: #fff; box-shadow: 0 8px 20px #2330470d; }
+.dashboard-section-grid strong { display: block; margin-bottom: 8px; color: #233047; font-size: 18px; }
+.dashboard-section-grid p { margin: 0; color: #7d8794; font-size: 13px; line-height: 1.5; }
 
 @media (max-width: 760px) {
   .dashboard-shell,
