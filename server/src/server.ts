@@ -8,6 +8,7 @@ import mongoose, { Schema } from "mongoose";
 
 const app = express();
 const configuredClientUrl = process.env.CLIENT_URL ?? "http://localhost:5173";
+const isProduction = process.env.NODE_ENV === "production";
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
@@ -62,7 +63,7 @@ app.post("/api/auth/login", async (req, res) => {
     const { email, password } = req.body as Record<string, string>;
     const user = await User.findOne({ email: email?.toLowerCase() });
     if (!user || !(await bcrypt.compare(password ?? "", user.passwordHash))) return res.status(401).json({ message: "Email or password is incorrect." });
-    res.cookie("token", tokenFor(user.id), { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", maxAge: 7 * 24 * 60 * 60 * 1000 });
+    res.cookie("token", tokenFor(user.id), { httpOnly: true, sameSite: isProduction ? "none" : "lax", secure: isProduction, maxAge: 7 * 24 * 60 * 60 * 1000 });
     res.json({ user: { id: user.id, name: user.name, email: user.email } });
   } catch { res.status(500).json({ message: "Unable to log in." }); }
 });
