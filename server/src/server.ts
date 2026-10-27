@@ -39,7 +39,7 @@ const FormResponse = mongoose.model("FormResponse", formSchema);
 
 function tokenFor(id: string) { return jwt.sign({ id }, process.env.JWT_SECRET ?? "development-secret", { expiresIn: "7d" }); }
 function auth(req: express.Request, res: express.Response, next: express.NextFunction) {
-  const token = req.cookies.token;
+  const token = req.cookies.token ?? req.headers.authorization?.replace(/^Bearer\s+/i, "");
   if (!token) return res.status(401).json({ message: "Please log in to continue." });
   try { res.locals.userId = (jwt.verify(token, process.env.JWT_SECRET ?? "development-secret") as { id: string }).id; next(); }
   catch { return res.status(401).json({ message: "Your session has expired." }); }
@@ -63,8 +63,9 @@ app.post("/api/auth/login", async (req, res) => {
     const { email, password } = req.body as Record<string, string>;
     const user = await User.findOne({ email: email?.toLowerCase() });
     if (!user || !(await bcrypt.compare(password ?? "", user.passwordHash))) return res.status(401).json({ message: "Email or password is incorrect." });
-    res.cookie("token", tokenFor(user.id), { httpOnly: true, sameSite: isProduction ? "none" : "lax", secure: isProduction, maxAge: 7 * 24 * 60 * 60 * 1000 });
-    res.json({ user: { id: user.id, name: user.name, email: user.email } });
+    const token = tokenFor(user.id);
+    res.cookie("token", token, { httpOnly: true, sameSite: isProduction ? "none" : "lax", secure: isProduction, maxAge: 7 * 24 * 60 * 60 * 1000 });
+    res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
   } catch { res.status(500).json({ message: "Unable to log in." }); }
 });
 app.get("/api/auth/me", auth, async (_req, res) => { const user = await User.findById(res.locals.userId).select("name email"); if (!user) return res.status(401).json({ message: "User not found." }); res.json({ user: { id: user.id, name: user.name, email: user.email } }); });

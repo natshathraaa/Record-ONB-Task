@@ -82,6 +82,7 @@ function AuthCard({ mode }: { mode: "signup" | "login" }) {
         window.setTimeout(() => navigate("/login", { state: { message: "Account created successfully. Please log in." } }), 1200);
       }
       else {
+        localStorage.setItem("authToken", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
         setNotice("Login successful. Redirecting to your form...");
         window.setTimeout(() => navigate("/form/1"), 1200);
